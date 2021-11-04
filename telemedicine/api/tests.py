@@ -14,9 +14,9 @@ class SignUpTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.credentials = {'username': 'test',
-                            'email': 'test@gmail.com',
-                            'password1': 'testpass',
-                            'password2': 'testpass'}
+                           'email': 'test@gmail.com',
+                           'password1': 'testpass',
+                           'password2': 'testpass'}
 
     def post(self, data, url='rest_register'):
         return self.client.post(reverse(url), data=data, content_type=content_type)
@@ -53,7 +53,6 @@ class SignUpTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_sign_up_with_duplicate_email(self):
-        # # # #
         User.objects.create(username='test', email='test@gmail.com', password='testpass')
         response = self.post(self.credentials)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -146,6 +145,9 @@ class FunctionalTestCase(TestCase):
         email = EmailAddress.objects.get(email='test@gmail.com')
         email.verified = '1'
         email.save()
+
+        email = EmailAddress.objects.get(email='test@gmail.com')
+        self.assertEqual(email.verified, True)
 
     def test_run_functional_test(self):
         self.sign_up()
