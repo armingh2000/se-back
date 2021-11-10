@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     # Local
     'users',
     'api',
+    'accounts',
 ]
 
 MIDDLEWARE = [
@@ -102,9 +103,9 @@ AUTH_PASSWORD_VALIDATORS = [
     #{
     #    'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
     #},
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
+    #{
+    #    'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    #},
     #{
     #    'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
     #},
@@ -154,11 +155,16 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 AUTHENTICATION_BACKENDS = (
    "django.contrib.auth.backends.ModelBackend",
    "allauth.account.auth_backends.AuthenticationBackend"
 )
 
+# Register
+REST_AUTH_REGISTER_SERIALIZERS = {
+    'REGISTER_SERIALIZER': 'accounts.serializers.UserRegistrationSerializer'
+}
 
 # JWT dj-rest-auth
 REST_USE_JWT = True
