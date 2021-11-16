@@ -28,7 +28,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             errors['password'] = list(e.messages)
 
         if data['password1'] != data['password2']:
-            errors['non_field_errors'] = list('Passwords must match.')
+            errors['non_field_errors'] = ['Passwords must match.']
 
         if errors:
             raise serializers.ValidationError(errors)
