@@ -1,0 +1,21 @@
+{% extends "account/base.html" %}
+
+{% block content %}
+  <div class="row">
+    <h3>E-mail verification</h3><hr/>
+    {% include "account/fragments/email_verification_form.html" %}
+  </div>
+{% endblock %}
+
+{% block script %}
+    <script type="text/javascript">
+        var url_elements = window.location.pathname.split('/');
+        if (url_elements.length == 5){
+            var key = url_elements[url_elements.length - 2];
+            if (key !== undefined){
+                $('input[name=key]').val(key);
+            }
+        }
+    </script>
+{% endblock %}
+
