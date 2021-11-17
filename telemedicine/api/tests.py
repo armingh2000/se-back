@@ -13,10 +13,10 @@ content_type = 'application/json'
 class SignUpTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.credentials = {'username': 'test',
-                           'email': 'test@gmail.com',
+        cls.credentials = {'email': 'test@gmail.com',
                            'password1': 'testpass',
-                           'password2': 'testpass'}
+                           'password2': 'testpass',
+                           'is_doctor': False}
 
     def post(self, data, url='rest_register'):
         return self.client.post(reverse(url), data=data, content_type=content_type)
@@ -27,12 +27,6 @@ class SignUpTestCase(TestCase):
     def test_sign_up(self):
         response = self.post(self.credentials)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-    def test_sign_up_with_empty_username(self):
-        cred = self.credentials.copy()
-        cred['username'] = ''
-        response = self.post(cred)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_sign_up_with_empty_email(self):
         cred = self.credentials.copy()
@@ -53,21 +47,16 @@ class SignUpTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_sign_up_with_duplicate_email(self):
-        User.objects.create(username='test', email='test@gmail.com', password='testpass')
+        User.objects.create(email='test@gmail.com', password='testpass')
         response = self.post(self.credentials)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_sign_up_with_duplicate_username(self):
-        User.objects.create(username='test', email='test@gmail.com', password='testpass')
-        response = self.post(self.credentials)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_sign_up_with_short_password_less_than_8(self):
+    def test_sign_up_with_empty_is_doctor(self):
         cred = self.credentials.copy()
-        cred['password1'] = '123'
-        cred['password2'] = '123'
+        cred['is_doctor'] = None
         response = self.post(cred)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
 
 class LoginTestCase(TestCase):
     @classmethod
@@ -80,10 +69,10 @@ class LoginTestCase(TestCase):
     def setUp(self):
         self.client = Client()
 
-        signup_cred = {'username': 'test',
-                       'email': 'test@gmail.com',
+        signup_cred = {'email': 'test@gmail.com',
                        'password1': 'testpass',
-                       'password2': 'testpass'}
+                       'password2': 'testpass',
+                       'is_doctor': False}
 
         self.post(signup_cred, 'rest_register')
         email = EmailAddress.objects.get(email='test@gmail.com')
@@ -119,15 +108,53 @@ class LoginTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
+class ResetPasswordTestCase(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.credentials = {'email': 'test@gmail.com'}
+
+    def post(self, data, url='rest_password_reset'):
+        return self.client.post(reverse(url), json.dumps(data), content_type=content_type)
+
+    def setUp(self):
+        self.client = Client()
+
+        signup_cred = {'email': 'test@gmail.com',
+                       'password1': 'testpass',
+                       'password2': 'testpass',
+                       'is_doctor': False}
+
+        self.post(signup_cred, 'rest_register')
+        email = EmailAddress.objects.get(email='test@gmail.com')
+        email.verified = '1'
+        email.save()
+
+    def test_reset_password(self):
+        response = self.post(self.credentials)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_reset_password_with_invalid_email(self):
+        cred = self.credentials.copy()
+        cred['email'] = 'test.com'
+        response = self.post(cred)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_reset_password_with_empty_email(self):
+        cred = self.credentials.copy()
+        cred['email'] = ''
+        response = self.post(cred)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
 class FunctionalTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.client = Client()
 
-        cls.sign_up_cred = {'username': 'test',
-                            'email': 'test@gmail.com',
+        cls.sign_up_cred = {'email': 'test@gmail.com',
                             'password1': 'testpass',
-                            'password2': 'testpass'}
+                            'password2': 'testpass',
+                            'is_doctor': False}
         cls.login_cred = {'email': 'test@gmail.com', 'password': 'testpass'}
 
     def post(self, data, url):
@@ -149,7 +176,7 @@ class FunctionalTestCase(TestCase):
         email = EmailAddress.objects.get(email='test@gmail.com')
         self.assertEqual(email.verified, True)
 
-    def test_run_functional_test(self):
+    def test_functional(self):
         self.sign_up()
         self.verify_email()
         self.login()
