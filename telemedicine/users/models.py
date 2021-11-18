@@ -109,5 +109,6 @@ class Doctor(models.Model):
         ],
         default=0
     )
+    degree_picture = models.ImageField(upload_to='degrees', blank=True)
     cv = models.ImageField(upload_to='cvs', blank=True)
     location = models.TextField(max_length=1e+4, blank=True)
