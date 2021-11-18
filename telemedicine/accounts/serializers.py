@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from users.models import User
+from users.models import User, Patient, Doctor
 from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions
 
@@ -44,4 +44,30 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         user.set_password(self.validated_data['password1'])
         user.save()
 
+        is_doctor = self.validated_data['is_doctor']
+        Role = Doctor if is_doctor else Patient
+        Role.objects.create(user=user)
+
         return user
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'first_name', 'last_name', 'gender', 'profile_picture', 'is_doctor']
+
+
+class PatientProfileSerializer(serializers.ModelSerializer):
+    user = UserProfileSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = Patient
+        fields = ['height', 'weight', 'medical_record', 'user']
+
+
+class DoctorProfileSerializer(serializers.ModelSerializer):
+    user = UserProfileSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = Doctor
+        fields = ['degree', 'cv', 'user']

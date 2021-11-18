@@ -3,7 +3,11 @@ from dj_rest_auth.registration.views import ConfirmEmailView, VerifyEmailView
 from django.contrib.auth import views as auth_views
 from django.urls import reverse_lazy
 
+
 urlpatterns = [
+    # Users: Preview
+    path('accounts/', include('accounts.urls')),
+
     # Login
     path('auth/', include('dj_rest_auth.urls')),
 
