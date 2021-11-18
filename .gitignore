@@ -140,4 +140,5 @@ cython_debug/
 
 # Custom
 db.sqlite3
-
+*.pyc
+media/
