@@ -41,6 +41,7 @@ INSTALLED_APPS = [
 
     # 3-rd party
     'rest_framework',
+    'rest_framework.authtoken',
     'rest_framework_simplejwt',
     'allauth',
     'allauth.account',
@@ -141,8 +142,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # REST FRAMEWORK
 REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.AllowAny',
+    ),
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
 }
 
@@ -163,13 +167,18 @@ AUTHENTICATION_BACKENDS = (
 
 # Register
 REST_AUTH_REGISTER_SERIALIZERS = {
-    'REGISTER_SERIALIZER': 'accounts.serializers.UserRegistrationSerializer'
+    'REGISTER_SERIALIZER': 'accounts.serializers.UserRegistrationSerializer',
 }
 
 # JWT dj-rest-auth
 REST_USE_JWT = True
 JWT_AUTH_COOKIE = 'se-app-auth'
 JWT_AUTH_REFRESH_COOKIE = 'se-refresh-token'
+from datetime import timedelta
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=2),
+}
 
 # Email
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

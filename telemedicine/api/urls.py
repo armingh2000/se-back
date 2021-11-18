@@ -2,6 +2,7 @@ from django.urls import path, include
 from dj_rest_auth.registration.views import ConfirmEmailView, VerifyEmailView
 from django.contrib.auth import views as auth_views
 from django.urls import reverse_lazy
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 
 urlpatterns = [
