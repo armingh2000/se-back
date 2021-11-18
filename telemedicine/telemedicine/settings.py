@@ -175,5 +175,8 @@ JWT_AUTH_REFRESH_COOKIE = 'se-refresh-token'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 SITE_ID = 1
 
+# Media
+MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL = '/media/'
 
 
