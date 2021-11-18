@@ -12,7 +12,7 @@ class UserEditView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def put(self, request):
-        if request.user.id != request.data['pk']:
+        if request.user.pk != int(request.data['pk']):
             return Response("user is not authorized to edit this profile", status=status.HTTP_403_FORBIDDEN)
 
         user = get_object_or_404(User, id=request.data['pk'])
