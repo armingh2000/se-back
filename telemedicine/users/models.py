@@ -110,3 +110,4 @@ class Doctor(models.Model):
         default=0
     )
     cv = models.ImageField(upload_to='cvs', blank=True)
+    location = models.TextField(max_length=1e+4, blank=True)
