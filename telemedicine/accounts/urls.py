@@ -7,5 +7,5 @@ urlpatterns = [
     path('profile/', UserProfileView.as_view()),
 
     # User Profile Edit
-    path('profile/edit/', UserEditView.as_view())
+    path('profile/edit/', UserEditView.as_view(), name='rest_edit')
 ]
