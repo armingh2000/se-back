@@ -1,16 +1,13 @@
-from django.test import TestCase, Client
+from rest_framework.test import APIClient, APITestCase
 from users.models import User
 from rest_framework import status
 from django.urls import reverse
 from allauth.account.models import EmailAddress
 
-import json
-
-content_type = 'application/json'
 
 # Create your tests here.
 
-class SignUpTestCase(TestCase):
+class SignUpTests(APITestCase):
     @classmethod
     def setUpTestData(cls):
         cls.credentials = {'email': 'test@gmail.com',
@@ -19,10 +16,7 @@ class SignUpTestCase(TestCase):
                            'is_doctor': False}
 
     def post(self, data, url='rest_register'):
-        return self.client.post(reverse(url), data=data, content_type=content_type)
-
-    def setUp(self):
-        self.client = Client()
+        return self.client.post(reverse(url), data)
 
     def test_sign_up(self):
         response = self.post(self.credentials)
@@ -58,17 +52,15 @@ class SignUpTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
-class LoginTestCase(TestCase):
+class LoginTests(APITestCase):
     @classmethod
     def setUpTestData(cls):
         cls.credentials = {'email': 'test@gmail.com', 'password': 'testpass'}
 
     def post(self, data, url='rest_login'):
-        return self.client.post(reverse(url), json.dumps(data), content_type=content_type)
+        return self.client.post(reverse(url), data)
 
     def setUp(self):
-        self.client = Client()
-
         signup_cred = {'email': 'test@gmail.com',
                        'password1': 'testpass',
                        'password2': 'testpass',
@@ -108,17 +100,15 @@ class LoginTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
-class ResetPasswordTestCase(TestCase):
+class ResetPasswordTests(APITestCase):
     @classmethod
     def setUpTestData(cls):
         cls.credentials = {'email': 'test@gmail.com'}
 
     def post(self, data, url='rest_password_reset'):
-        return self.client.post(reverse(url), json.dumps(data), content_type=content_type)
+        return self.client.post(reverse(url), data)
 
     def setUp(self):
-        self.client = Client()
-
         signup_cred = {'email': 'test@gmail.com',
                        'password1': 'testpass',
                        'password2': 'testpass',
@@ -146,11 +136,9 @@ class ResetPasswordTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
-class FunctionalTestCase(TestCase):
+class FunctionalTests(APITestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.client = Client()
-
         cls.sign_up_cred = {'email': 'test@gmail.com',
                             'password1': 'testpass',
                             'password2': 'testpass',
@@ -158,7 +146,7 @@ class FunctionalTestCase(TestCase):
         cls.login_cred = {'email': 'test@gmail.com', 'password': 'testpass'}
 
     def post(self, data, url):
-        return self.client.post(reverse(url), json.dumps(data), content_type=content_type)
+        return self.client.post(reverse(url), data)
 
     def sign_up(self):
         response = self.post(self.sign_up_cred, 'rest_register')

@@ -148,6 +148,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
 }
 
 ## Custom ##
@@ -188,4 +189,8 @@ SITE_ID = 1
 MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_URL = '/media/'
 
-
+# Test
+import sys
+if 'test' in sys.argv:
+    # store files in memory, no cleanup after tests are finished
+    DEFAULT_FILE_STORAGE = 'inmemorystorage.InMemoryStorage'
