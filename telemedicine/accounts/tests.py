@@ -1,10 +1,9 @@
-from rest_framework.test import APIClient, APITestCase
+from rest_framework.test import APITestCase
 from users.models import User
 from rest_framework import status
 from django.urls import reverse
 from allauth.account.models import EmailAddress
 from PIL import Image
-from django.core.files.uploadedfile import SimpleUploadedFile
 from io import BytesIO
 
 
@@ -30,7 +29,7 @@ class PatientEditProfileTests(APITestCase):
                          'weight': 50.5,
                          'medical_record': 'mmeeddiiccaall rreeccoorrdd'}
 
-    def put(self, data, url='rest_edit'):
+    def put(self, data, url='rest_profile_edit'):
         return self.client.put(reverse(url), data, format='multipart')
 
     def post(self, data, url):
@@ -118,7 +117,7 @@ class DoctorEditProfileTests(APITestCase):
                          'cv': 'ddooccttoorr ccvv',
                          'location': 'Tehran',}
 
-    def put(self, data, url='rest_edit'):
+    def put(self, data, url='rest_profile_edit'):
         return self.client.put(reverse(url), data, format='multipart')
 
     def post(self, data, url):
@@ -188,3 +187,44 @@ class DoctorEditProfileTests(APITestCase):
         data['location'] = self.get_temporary_image()
         response = self.put(data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+class ProfilePreviewTests(APITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.signup_credentials = {'email': 'patient@gmail.com',
+                                  'password1': 'test',
+                                  'password2': 'test',
+                                  'is_doctor': False}
+
+        cls.login_credentials = {'email': 'patient@gmail.com',
+                                 'password': 'test'}
+
+        cls.preview_data = {'pk': None} # assign in setUp
+
+    def get(self, data, url='rest_profile_preview'):
+        return self.client.get(reverse(url), {'user_id': data['pk']})
+
+    def post(self, data, url):
+        return self.client.post(reverse(url), data)
+
+    def setUp(self):
+        response = self.post(self.signup_credentials, 'rest_register')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        email = EmailAddress.objects.get(email='patient@gmail.com')
+        email.verified = '1'
+        email.save()
+        response = self.post(self.login_credentials, 'rest_login')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.preview_data['pk'] = response.data['user']['pk']
+
+    def test_profile_preview(self):
+        response = self.get(self.preview_data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_profile_preview_with_unavailable_pk(self):
+        data = self.preview_data.copy()
+        data['pk'] = 2
+        response = self.get(data)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+

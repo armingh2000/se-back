@@ -4,8 +4,8 @@ from .views import UserProfileView, UserEditView
 
 urlpatterns = [
     # User Profile Preview
-    path('profile/', UserProfileView.as_view()),
+    path('profile/', UserProfileView.as_view(), name='rest_profile_preview'),
 
     # User Profile Edit
-    path('profile/edit/', UserEditView.as_view(), name='rest_edit')
+    path('profile/edit/', UserEditView.as_view(), name='rest_profile_edit')
 ]
