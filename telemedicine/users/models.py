@@ -40,6 +40,7 @@ class User(AbstractBaseUser):
     staff = models.BooleanField(default=False)
     admin = models.BooleanField(default=False)
     is_doctor = models.BooleanField(default=False)
+    is_patient = models.BooleanField(default=False)
     first_name = models.CharField(max_length=30, blank=True)
     last_name  = models.CharField(max_length=30, blank=True)
     gender = models.BooleanField(default=True)
@@ -48,7 +49,7 @@ class User(AbstractBaseUser):
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['is_doctor']
 
     def get_full_name(self):
         return self.email
@@ -62,7 +63,6 @@ class User(AbstractBaseUser):
     def has_perm(self, perm, obj=None):
         "Does the user have a specific permission?"
         # Simplest possible answer: Yes, always
-        print(perm)
         return True
 
     def has_module_perms(self, app_label):

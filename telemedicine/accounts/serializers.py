@@ -12,12 +12,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'email', 'password1', 'password2', 'is_doctor']
 
-    def validate_is_doctor(self, value):
-        if value is None:
-            raise serializers.ValidationError("User must be either doctor or patient.")
-
-        return value
-
     def validate(self, data):
         password = data['password1']
 
@@ -39,6 +33,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         user = User(
             email=self.validated_data['email'],
             is_doctor=self.validated_data['is_doctor'],
+            is_patient=not self.validated_data['is_doctor']
         )
 
         user.set_password(self.validated_data['password1'])
@@ -54,7 +49,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['pk', 'email', 'first_name', 'last_name', 'gender', 'profile_picture', 'is_doctor']
+        fields = ['pk', 'email', 'first_name', 'last_name', 'gender', 'profile_picture', 'is_doctor', 'is_patient']
 
 
 class PatientProfileSerializer(serializers.ModelSerializer):
