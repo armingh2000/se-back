@@ -199,10 +199,10 @@ class ProfilePreviewTests(APITestCase):
         cls.login_credentials = {'email': 'patient@gmail.com',
                                  'password': 'test'}
 
-        cls.preview_data = {'pk': None} # assign in setUp
+        cls.preview_data = {'user_id': None, 'type': 0} # assign in setUp
 
     def get(self, data, url='rest_profile_preview'):
-        return self.client.get(reverse(url), {'user_id': data['pk']})
+        return self.client.get(reverse(url), data)
 
     def post(self, data, url):
         return self.client.post(reverse(url), data)
@@ -215,16 +215,66 @@ class ProfilePreviewTests(APITestCase):
         email.save()
         response = self.post(self.login_credentials, 'rest_login')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.preview_data['pk'] = response.data['user']['pk']
+        self.preview_data['user_id'] = response.data['user']['pk']
 
     def test_profile_preview(self):
         response = self.get(self.preview_data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_profile_preview_with_unavailable_pk(self):
+    def test_profile_preview_with_unavailable_user_id(self):
         data = self.preview_data.copy()
-        data['pk'] = 2
+        data['user_id'] = 2
         response = self.get(data)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_profile_preview_with_unavailable_type(self):
+        data = self.preview_data.copy()
+        data['type'] = 1
+        response = self.get(data)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+class CreateUserTypeTests(APITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.signup_credentials = {'email': 'patient@gmail.com',
+                                  'password1': 'test',
+                                  'password2': 'test',
+                                  'is_doctor': False}
+
+        cls.login_credentials = {'email': 'patient@gmail.com',
+                                 'password': 'test'}
+
+        cls.create_type_data = {'pk': None, 'type': 1} # assign in setUp
+
+    def post(self, data, url='rest_create_user_type'):
+        return self.client.post(reverse(url), data)
+
+    def setUp(self):
+        response = self.post(self.signup_credentials, 'rest_register')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        email = EmailAddress.objects.get(email='patient@gmail.com')
+        email.verified = '1'
+        email.save()
+        response = self.post(self.login_credentials, 'rest_login')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + response.data['access_token'])
+        self.create_type_data['pk'] = response.data['user']['pk']
+
+    def test_create_user_type(self):
+        response = self.post(self.create_type_data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_create_user_type_with_duplicate_type(self):
+        data = self.create_type_data.copy()
+        data['type'] = 0
+        response = self.post(data)
+        self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
+
+    def test_profile_preview_with_unauthorized_pk(self):
+        data = self.create_type_data.copy()
+        data['pk'] = self.create_type_data['pk'] + 1
+        response = self.post(data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
 
