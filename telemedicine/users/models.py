@@ -6,6 +6,7 @@ from django.utils.translation import ugettext_lazy
 
 # Create your models here.
 
+
 class UserManager(BaseUserManager):
     def create_user(self, email, password, **extra_fields):
         if not email:
