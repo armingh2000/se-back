@@ -148,16 +148,16 @@ class PatientFunctionalTests(APITestCase):
 
         cls.login_cred = {'email': 'test@gmail.com', 'password': 'testpass'}
 
-        cls.edit_data = {'pk': None, # assign in login
-                         'first_name': 'first',
+        cls.edit_data = {'first_name': 'first',
                          'last_name': 'last',
                          'gender': 1,
                          'profile_picture': cls.get_temporary_image(),
                          'height': 50,
                          'weight': 50.5,
-                         'medical_record': 'mmeeddiiccaall rreeccoorrdd'}
+                         'medical_record': 'mmeeddiiccaall rreeccoorrdd',
+                         'type': 0}
 
-        cls.preview_data = {'pk': None} # assign in login
+        cls.preview_data = {'user_pk': None, 'type': 0} # assign in login
 
     @classmethod
     def get_temporary_image(cls):
@@ -175,7 +175,7 @@ class PatientFunctionalTests(APITestCase):
         return self.client.put(reverse(url), data, format='multipart')
 
     def get(self, data, url='rest_profile_preview'):
-        return self.client.get(reverse(url), {'user_id': data['pk']})
+        return self.client.get(reverse(url), data)
 
     def sign_up(self):
         response = self.post(self.sign_up_cred, 'rest_register')
@@ -185,8 +185,7 @@ class PatientFunctionalTests(APITestCase):
         response = self.post(self.login_cred, 'rest_login')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + response.data['access_token'])
-        self.edit_data['pk'] = response.data['user']['pk']
-        self.preview_data['pk'] = response.data['user']['pk']
+        self.preview_data['user_pk'] = response.data['user']['pk']
 
     def verify_email(self):
         email = EmailAddress.objects.get(email='test@gmail.com')
@@ -222,17 +221,17 @@ class DoctorFunctionalTests(APITestCase):
 
         cls.login_cred = {'email': 'test@gmail.com', 'password': 'testpass'}
 
-        cls.edit_data = {'pk': None, # assign in setUp
-                         'first_name': 'first',
+        cls.edit_data = {'first_name': 'first',
                          'last_name': 'last',
                          'gender': 1,
                          'profile_picture': cls.get_temporary_image(),
                          'degree': 3,
                          'degree_picture': cls.get_temporary_image(),
                          'cv': 'ddooccttoorr ccvv',
-                         'location': 'Tehran',}
+                         'location': 'Tehran',
+                         'type': 1}
 
-        cls.preview_data = {'pk': None} # assign in login
+        cls.preview_data = {'user_pk': None, 'type': 1} # assign in login
 
     @classmethod
     def get_temporary_image(cls):
@@ -250,7 +249,7 @@ class DoctorFunctionalTests(APITestCase):
         return self.client.put(reverse(url), data, format='multipart')
 
     def get(self, data, url='rest_profile_preview'):
-        return self.client.get(reverse(url), {'user_id': data['pk']})
+        return self.client.get(reverse(url), data)
 
     def sign_up(self):
         response = self.post(self.sign_up_cred, 'rest_register')
@@ -260,8 +259,7 @@ class DoctorFunctionalTests(APITestCase):
         response = self.post(self.login_cred, 'rest_login')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + response.data['access_token'])
-        self.edit_data['pk'] = response.data['user']['pk']
-        self.preview_data['pk'] = response.data['user']['pk']
+        self.preview_data['user_pk'] = response.data['user']['pk']
 
     def verify_email(self):
         email = EmailAddress.objects.get(email='test@gmail.com')

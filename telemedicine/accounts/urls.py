@@ -1,4 +1,4 @@
-from django.urls import path, include, re_path
+from django.urls import path
 from .views import *
 
 
@@ -11,4 +11,5 @@ urlpatterns = [
 
     # User Type Creation
     path('create_type', UserCreateTypeView.as_view(), name='rest_create_user_type'),
+
 ]

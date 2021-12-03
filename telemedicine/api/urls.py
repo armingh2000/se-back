@@ -27,4 +27,7 @@ urlpatterns = [
     path('auth/reset/<uidb64>/<token>/',
          auth_views.PasswordResetConfirmView.as_view(template_name='account/password_reset_confirm.html'),
          name='password_reset_confirm'),
+
+    # Comment
+    path('comments/', include('comments.urls')),
 ]

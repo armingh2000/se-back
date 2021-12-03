@@ -1,7 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.utils.translation import ugettext_lazy 
+from django.utils.translation import ugettext_lazy
+
 
 # Create your models here.
 
