@@ -30,4 +30,7 @@ urlpatterns = [
 
     # Comment
     path('comments/', include('comments.urls')),
+
+    # Search
+    path('search/', include('search.urls')),
 ]
