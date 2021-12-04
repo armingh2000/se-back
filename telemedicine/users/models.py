@@ -104,13 +104,7 @@ class Patient(models.Model):
 
 class Doctor(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='doctor')
-    degree = models.IntegerField(
-        validators=[
-            MaxValueValidator(3),
-            MinValueValidator(0)
-        ],
-        default=0
-    )
+    degree = models.CharField(max_length=100, blank=True)
     degree_picture = models.ImageField(upload_to='degrees', blank=True)
     cv = models.TextField(max_length=1e+4, blank=True)
     location = models.TextField(max_length=1e+4, blank=True)
