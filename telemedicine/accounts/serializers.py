@@ -105,6 +105,18 @@ class DoctorEditSerializer(serializers.ModelSerializer):
         model = Doctor
         fields = ['degree', 'degree_picture', 'cv', 'location', 'user']
 
+    def validate_degree(self, data):
+        errors = None
+
+        if not isinstance(data, list):
+            errors = 'Degree must be list.'
+
+        if errors:
+            raise serializers.ValidationError(errors)
+
+        return super().validate(data)
+
+
     def update(self, instance, validated_data):
         instance.degree = validated_data['degree']
         instance.cv = validated_data['cv']

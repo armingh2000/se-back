@@ -3,6 +3,7 @@ from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.translation import ugettext_lazy
 
+import json
 
 # Create your models here.
 
@@ -104,7 +105,9 @@ class Patient(models.Model):
 
 class Doctor(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='doctor')
-    degree = models.CharField(max_length=100, blank=True)
+    degree = models.JSONField(default=list)
     degree_picture = models.ImageField(upload_to='degrees', blank=True)
     cv = models.TextField(max_length=1e+4, blank=True)
     location = models.TextField(max_length=1e+4, blank=True)
+
+

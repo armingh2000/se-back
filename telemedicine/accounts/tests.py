@@ -104,7 +104,7 @@ class DoctorEditProfileTests(APITestCase):
                          'last_name': 'last',
                          'gender': 1,
                          'profile_picture': cls.get_temporary_image(),
-                         'degree': 3,
+                         'degree': ['esp1', 'esp2'],
                          'degree_picture': cls.get_temporary_image(),
                          'cv': 'ddooccttoorr ccvv',
                          'location': 'Tehran',
