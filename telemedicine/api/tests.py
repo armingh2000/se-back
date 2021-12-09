@@ -1,5 +1,5 @@
 from rest_framework.test import APITestCase
-from users.models import User
+from users.models import User, Doctor, Patient
 from rest_framework import status
 from django.urls import reverse
 from allauth.account.models import EmailAddress
@@ -159,6 +159,19 @@ class PatientFunctionalTests(APITestCase):
 
         cls.preview_data = {'user_pk': None, 'type': 0} # assign in login
 
+        User.objects.create(email='doctor@gmail.com', password='doctor', first_name='first', last_name='last')
+        cls.doctor_user = User.objects.get(email='doctor@gmail.com')
+        Doctor.objects.create(user=cls.doctor_user,
+                              degree='["esp"]',
+                              cv='cccvvv',
+                              location='tehran'
+                              )
+
+        cls.create_comment_data = {"doctor_pk": cls.doctor_user.pk, "body": "ccoommeenntt"}
+        cls.get_comment_list_data = {"doctor_pk": cls.doctor_user.pk}
+
+        cls.search_data = {"search": "first"}
+
     @classmethod
     def get_temporary_image(cls):
         file = BytesIO()
@@ -191,7 +204,6 @@ class PatientFunctionalTests(APITestCase):
         email = EmailAddress.objects.get(email='test@gmail.com')
         email.verified = '1'
         email.save()
-
         email = EmailAddress.objects.get(email='test@gmail.com')
         self.assertEqual(email.verified, True)
 
@@ -203,12 +215,29 @@ class PatientFunctionalTests(APITestCase):
         response = self.put(self.edit_data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    def search(self):
+        response = self.get(self.search_data, url='rest_search')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+
+    def create_comment(self):
+        response = self.put(self.create_comment_data, url='rest_create_comment')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def get_comment_list(self):
+        response = self.get(self.get_comment_list_data, url='rest_comment_list')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+
     def test_functional(self):
         self.sign_up()
         self.verify_email()
         self.login()
         self.preview_profile()
         self.edit_profile()
+        self.search()
+        self.create_comment()
+        self.get_comment_list()
 
 
 class DoctorFunctionalTests(APITestCase):
@@ -225,13 +254,15 @@ class DoctorFunctionalTests(APITestCase):
                          'last_name': 'last',
                          'gender': 1,
                          'profile_picture': cls.get_temporary_image(),
-                         'degree': 3,
+                         'degree': '["esp1", "esp2"]',
                          'degree_picture': cls.get_temporary_image(),
                          'cv': 'ddooccttoorr ccvv',
                          'location': 'Tehran',
                          'type': 1}
 
         cls.preview_data = {'user_pk': None, 'type': 1} # assign in login
+
+        cls.create_type_data = {'type': 0}
 
     @classmethod
     def get_temporary_image(cls):
@@ -265,7 +296,6 @@ class DoctorFunctionalTests(APITestCase):
         email = EmailAddress.objects.get(email='test@gmail.com')
         email.verified = '1'
         email.save()
-
         email = EmailAddress.objects.get(email='test@gmail.com')
         self.assertEqual(email.verified, True)
 
@@ -275,6 +305,10 @@ class DoctorFunctionalTests(APITestCase):
 
     def edit_profile(self):
         response = self.put(self.edit_data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def create_user_type(self):
+        response = self.post(self.create_type_data, url='rest_create_user_type')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_functional(self):

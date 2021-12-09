@@ -20,7 +20,7 @@ class CreateCommentView(APIView):
 
         doctor_user = get_object_or_404(User, pk=request.data['doctor_pk'])
         if doctor_user.pk == user.pk:
-            return Response('doctor and patient are the same', status=status.HTTP_400_BAD_REQUEST)
+            return Response('doctor and patient are the same', status=status.HTTP_409_CONFLICT)
 
         body = request.data['body']
         if len(body) == 0:
