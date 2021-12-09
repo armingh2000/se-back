@@ -56,13 +56,13 @@ class DoctorModelTests(APITestCase):
         User.objects.create(email='test@gmail.com', password='testpass')
         cls.user = User.objects.get(email='test@gmail.com')
         Doctor.objects.create(user=cls.user,
-                              degree=2,
+                              degree='["esp"]',
                               cv='cccvvv',
                               location='tehran'
                               )
 
     def test_doctor_model(self):
         doctor = Doctor.objects.get(user=self.user)
-        self.assertEqual(doctor.degree, 2)
+        self.assertEqual(doctor.degree, '["esp"]')
         self.assertEqual(doctor.cv, 'cccvvv')
         self.assertEqual(doctor.location, 'tehran')

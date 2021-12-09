@@ -104,7 +104,7 @@ class DoctorEditProfileTests(APITestCase):
                          'last_name': 'last',
                          'gender': 1,
                          'profile_picture': cls.get_temporary_image(),
-                         'degree': ['esp1', 'esp2'],
+                         'degree': '["esp1", "esp2"]',
                          'degree_picture': cls.get_temporary_image(),
                          'cv': 'ddooccttoorr ccvv',
                          'location': 'Tehran',
@@ -232,7 +232,7 @@ class CreateUserTypeTests(APITestCase):
         cls.login_credentials = {'email': 'patient@gmail.com',
                                  'password': 'test'}
 
-        cls.create_type_data = {'type': 1} 
+        cls.create_type_data = {'type': 1}
 
     def post(self, data, url='rest_create_user_type'):
         return self.client.post(reverse(url), data)
