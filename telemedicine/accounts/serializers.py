@@ -65,7 +65,7 @@ class DoctorProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Doctor
-        fields = ['degree', 'cv', 'user']
+        fields = ['cv', 'user']
 
 
 class UserEditSerializer(serializers.ModelSerializer):
@@ -103,25 +103,14 @@ class DoctorEditSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Doctor
-        fields = ['degree', 'degree_picture', 'cv', 'location', 'user']
-
-    def validate_degree(self, data):
-        errors = None
-
-        if not isinstance(data, list):
-            errors = 'Degree must be list.'
-
-        if errors:
-            raise serializers.ValidationError(errors)
-
-        return super().validate(data)
-
+        fields = ['cv', 'location', 'user']
 
     def update(self, instance, validated_data):
-        instance.degree = validated_data['degree']
         instance.cv = validated_data['cv']
         instance.location = validated_data['location']
-        instance.degree_picture = validated_data['degree_picture']
         instance.save()
 
         return instance
+
+
+

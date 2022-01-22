@@ -1,9 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.utils.translation import ugettext_lazy
-
-import json
+from django.utils.translation import gettext_lazy as _
 
 # Create your models here.
 
@@ -11,10 +9,10 @@ import json
 class UserManager(BaseUserManager):
     def create_user(self, email, password, **extra_fields):
         if not email:
-            raise ValueError(ugettext_lazy('Users must have an email address'))
+            raise ValueError(_('Users must have an email address'))
 
         if not password:
-            raise ValueError(ugettext_lazy('Users must have a password'))
+            raise ValueError(_('Users must have a password'))
 
         user = self.model(
             email=self.normalize_email(email),
@@ -85,7 +83,7 @@ class User(AbstractBaseUser):
 
 
 class Patient(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='patient')
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='%(class)s_patient')
     medical_record = models.TextField(max_length=1e+4, blank=True)
     height = models.IntegerField(
         validators=[
@@ -104,10 +102,9 @@ class Patient(models.Model):
 
 
 class Doctor(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='doctor')
-    degree = models.JSONField(default=list)
-    degree_picture = models.ImageField(upload_to='degrees', blank=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='%(class)s_doctor')
     cv = models.TextField(max_length=1e+4, blank=True)
     location = models.TextField(max_length=1e+4, blank=True)
+
 
 

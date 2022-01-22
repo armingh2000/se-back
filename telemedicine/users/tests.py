@@ -16,15 +16,6 @@ class UserModelTests(APITestCase):
                             last_name='last',
                             gender=0)
 
-    @classmethod
-    def get_temporary_image(cls):
-        file = BytesIO()
-        image = Image.new('RGBA', size=(100, 100), color=(155, 0, 0))
-        image.save(file, 'png')
-        file.name = 'test.png'
-        file.seek(0)
-        return file
-
     def test_user_model(self):
         user = User.objects.get(email='test@gmail.com')
         self.assertEqual(user.email, 'test@gmail.com')
@@ -50,19 +41,18 @@ class PatientModelTests(APITestCase):
         self.assertEqual(patient.height, 50)
         self.assertEqual(patient.weight, 50.5)
 
+
 class DoctorModelTests(APITestCase):
     @classmethod
     def setUpTestData(cls):
         User.objects.create(email='test@gmail.com', password='testpass')
         cls.user = User.objects.get(email='test@gmail.com')
         Doctor.objects.create(user=cls.user,
-                              degree='["esp"]',
                               cv='cccvvv',
                               location='tehran'
                               )
 
     def test_doctor_model(self):
         doctor = Doctor.objects.get(user=self.user)
-        self.assertEqual(doctor.degree, '["esp"]')
         self.assertEqual(doctor.cv, 'cccvvv')
         self.assertEqual(doctor.location, 'tehran')

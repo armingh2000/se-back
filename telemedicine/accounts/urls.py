@@ -3,13 +3,13 @@ from .views import *
 
 
 urlpatterns = [
-    # User Profile Preview
+    # user profile preview
     path('profile/', UserProfileView.as_view(), name='rest_profile_preview'),
 
-    # User Profile Edit
+    # user profile edit
     path('profile/edit/', UserEditView.as_view(), name='rest_profile_edit'),
 
-    # User Type Creation
-    path('create_type', UserCreateTypeView.as_view(), name='rest_create_user_type'),
+    # user type creation
+    path('create_type/', UserCreateTypeView.as_view(), name='rest_create_user_type'),
 
 ]

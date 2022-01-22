@@ -33,4 +33,7 @@ urlpatterns = [
 
     # Search
     path('search/', include('search.urls')),
+
+    # Degree
+    path('degree/', include('degrees.urls')),
 ]
