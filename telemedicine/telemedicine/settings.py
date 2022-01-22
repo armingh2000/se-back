@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'dj_rest_auth',
     'dj_rest_auth.registration',
+    'django_extensions',
 
     # Local
     'users',
@@ -55,6 +56,7 @@ INSTALLED_APPS = [
     'accounts',
     'comments',
     'search',
+    'degrees'
 ]
 
 MIDDLEWARE = [

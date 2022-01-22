@@ -104,8 +104,6 @@ class DoctorEditProfileTests(APITestCase):
                          'last_name': 'last',
                          'gender': 1,
                          'profile_picture': cls.get_temporary_image(),
-                         'degree': '["esp1", "esp2"]',
-                         'degree_picture': cls.get_temporary_image(),
                          'cv': 'ddooccttoorr ccvv',
                          'location': 'Tehran',
                          'type': 1}
@@ -147,18 +145,6 @@ class DoctorEditProfileTests(APITestCase):
     def test_doctor_edit_profile_with_invalid_profile_picture(self):
         data = self.edit_data.copy()
         data['profile_picture'] = 'string' # must be file
-        response = self.put(data)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_doctor_edit_profile_with_invalid_degree(self):
-        data = self.edit_data.copy()
-        data['degree'] = -1
-        response = self.put(data)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_doctor_edit_profile_with_invalid_degree_picture(self):
-        data = self.edit_data.copy()
-        data['degree_picture'] = 'string' # must be file
         response = self.put(data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 

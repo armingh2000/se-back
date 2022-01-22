@@ -14,7 +14,6 @@ class CommentListTests(APITestCase):
         User.objects.create(email='doctor@gmail.com', password='doctor')
         cls.doctor_user = User.objects.get(email='doctor@gmail.com')
         Doctor.objects.create(user=cls.doctor_user,
-                              degree='["esp"]',
                               cv='cccvvv',
                               location='tehran'
                               )
@@ -52,7 +51,6 @@ class CommentModelTests(APITestCase):
         User.objects.create(email='doctor@gmail.com', password='doctor')
         cls.doctor_user = User.objects.get(email='doctor@gmail.com')
         Doctor.objects.create(user=cls.doctor_user,
-                              degree='["esp"]',
                               cv='cccvvv',
                               location='tehran'
                               )
@@ -90,7 +88,6 @@ class CreateCommentTests(APITestCase):
         User.objects.create(email='doctor@gmail.com', password='doctor')
         cls.doctor_user = User.objects.get(email='doctor@gmail.com')
         Doctor.objects.create(user=cls.doctor_user,
-                              degree='["esp"]',
                               cv='cccvvv',
                               location='tehran'
                               )

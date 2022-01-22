@@ -162,7 +162,6 @@ class PatientFunctionalTests(APITestCase):
         User.objects.create(email='doctor@gmail.com', password='doctor', first_name='first', last_name='last')
         cls.doctor_user = User.objects.get(email='doctor@gmail.com')
         Doctor.objects.create(user=cls.doctor_user,
-                              degree='["esp"]',
                               cv='cccvvv',
                               location='tehran'
                               )
@@ -170,7 +169,7 @@ class PatientFunctionalTests(APITestCase):
         cls.create_comment_data = {"doctor_pk": cls.doctor_user.pk, "body": "ccoommeenntt"}
         cls.get_comment_list_data = {"doctor_pk": cls.doctor_user.pk}
 
-        cls.search_data = {"search": "first"}
+        cls.search_data = {"query": "first"}
 
     @classmethod
     def get_temporary_image(cls):
@@ -254,15 +253,17 @@ class DoctorFunctionalTests(APITestCase):
                          'last_name': 'last',
                          'gender': 1,
                          'profile_picture': cls.get_temporary_image(),
-                         'degree': '["esp1", "esp2"]',
-                         'degree_picture': cls.get_temporary_image(),
                          'cv': 'ddooccttoorr ccvv',
-                         'location': 'Tehran',
+                         'location': 'tehran',
                          'type': 1}
 
         cls.preview_data = {'user_pk': None, 'type': 1} # assign in login
 
         cls.create_type_data = {'type': 0}
+
+        cls.add_degree_data = {'name': 'deg', 'picture': cls.get_temporary_image()}
+        cls.edit_degree_data = {'degree_pk': 1, 'name': 'deg2', 'picture': cls.get_temporary_image()}
+        cls.delete_degree_data = {'degree_pk': 1}
 
     @classmethod
     def get_temporary_image(cls):
@@ -281,6 +282,9 @@ class DoctorFunctionalTests(APITestCase):
 
     def get(self, data, url='rest_profile_preview'):
         return self.client.get(reverse(url), data)
+
+    def delete(self, data, url):
+        return self.client.delete(reverse(url), data)
 
     def sign_up(self):
         response = self.post(self.sign_up_cred, 'rest_register')
@@ -311,9 +315,24 @@ class DoctorFunctionalTests(APITestCase):
         response = self.post(self.create_type_data, url='rest_create_user_type')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    def add_degree(self):
+        response = self.put(self.add_degree_data, url='rest_add_degree')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def edit_degree(self):
+        response = self.put(self.edit_degree_data, url='rest_edit_degree')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def delete_degree(self):
+        response = self.delete(self.delete_degree_data, url='rest_edit_degree')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
     def test_functional(self):
         self.sign_up()
         self.verify_email()
         self.login()
         self.preview_profile()
         self.edit_profile()
+        self.add_degree()
+        self.edit_degree()
+        self.delete_degree()

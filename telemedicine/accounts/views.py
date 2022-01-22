@@ -5,6 +5,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework import status
+from degrees.models import Degree
+from degrees.serializers import DegreeSerializer
 
 
 # Create your views here.
@@ -30,7 +32,8 @@ class UserEditView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
-        return Response("successfully updated", status=status.HTTP_200_OK)
+        return Response("successfully updated")
+
 
 class UserCreateTypeView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -51,16 +54,27 @@ class UserCreateTypeView(APIView):
             user.is_patient = 1
         user.save()
 
-        return Response("successfully updated", status=status.HTTP_200_OK)
+        return Response("successfully updated")
+
 
 class UserProfileView(APIView):
     def get(self, request):
         user_pk = request.GET['user_pk']
         user_type = int(request.GET['type'])
         user = get_object_or_404(User, pk=user_pk)
-        (Role, Serializer) = (Doctor, DoctorProfileSerializer) if user_type \
-            else (Patient, PatientProfileSerializer)
 
-        profile = Serializer(get_object_or_404(Role, user=user), many=False).data
+        if user_type:
+            doctor = get_object_or_404(Doctor, user=user)
+            doc_prof = DoctorProfileSerializer(doctor, many=False).data
 
-        return Response(profile)
+            doc_deg = Degree.objects.filter(doctor=doctor)
+            degrees = DegreeSerializer(doc_deg, many=True).data
+            doc_prof['degrees'] = degrees
+
+            return Response(doc_prof)
+
+
+        pat_prof = PatientProfileSerializer(get_object_or_404(Patient, user=user), many=False).data
+
+        return Response(pat_prof)
+
