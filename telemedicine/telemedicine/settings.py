@@ -56,7 +56,8 @@ INSTALLED_APPS = [
     'accounts',
     'comments',
     'search',
-    'degrees'
+    'degrees',
+    'rate',
 ]
 
 MIDDLEWARE = [
