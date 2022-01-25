@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from degrees.models import Degree
 from degrees.serializers import DegreeSerializer
+from rate.models import Rate
 
 
 # Create your views here.
@@ -70,6 +71,28 @@ class UserProfileView(APIView):
             doc_deg = Degree.objects.filter(doctor=doctor)
             degrees = DegreeSerializer(doc_deg, many=True).data
             doc_prof['degrees'] = degrees
+
+            rates = Rate.objects.filter(doctor=doctor)
+            rating = 0.
+            n = 0
+
+            for rate in rates:
+                rating += rate.rate
+                n += 1
+
+            doc_prof['rate'] = rating / n if n != 0 else 0
+
+            user = request.user
+
+            if user.is_authenticated and user.is_patient:
+                patient = Patient.objects.get(user=user)
+                rate = Rate.objects.filter(doctor=doctor, patient=patient)
+
+                if rate.exists():
+                    rate = rate[0]
+                    doc_prof['user_rate'] = rate.rate
+                else:
+                    doc_prof['user_rate'] = -1
 
             return Response(doc_prof)
 

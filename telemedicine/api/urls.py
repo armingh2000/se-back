@@ -36,4 +36,7 @@ urlpatterns = [
 
     # Degree
     path('degree/', include('degrees.urls')),
+
+    # Rate
+    path('rate/', include('rate.urls')),
 ]
